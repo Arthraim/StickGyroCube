@@ -56,6 +56,9 @@ void loop() {
     updateCube();
     drawCube();
 
+    u8g2.setFont(u8g2_font_6x12_tr);
+    u8g2.drawStr(0, 7, " @ArthurWXY");
+
     u8g2.sendBuffer();
     delay(UPDATE_DELAY);
 }
