@@ -1,4 +1,8 @@
+#include <Arduino.h>
+#include <U8g2lib.h>
 #include "Projection.h"
+
+U8G2_SH1107_64X128_F_4W_HW_SPI u8g2(U8G2_R0,14, /* dc=*/ 27, /* reset=*/ 33);
 
 #define SCALE 1
 
@@ -39,6 +43,7 @@ line3 cubeLines[] = {
 Camera cam(64, 128);
 
 void setup() {
+  u8g2.begin();
 }
 
 void loop() {
@@ -52,5 +57,9 @@ void updateCube() {
 }
 
 void drawCube() {
-    printf("Hello");
+  u8g2.clearBuffer();					// clear the internal memory
+  u8g2.setFont(u8g2_font_ncenB08_tr);	// choose a suitable font
+  u8g2.drawStr(0, 10, "Hello World!");	// write something to the internal memory
+  u8g2.sendBuffer();					// transfer internal memory to the display
+  delay(1000);
 }
