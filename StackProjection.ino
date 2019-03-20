@@ -14,33 +14,34 @@ float roll, pitch, yaw;
 
 Transform cubeTrans;
 
-// Cube vertices
-point3 cubeVerts[] = {
-    {  1,  1,  1 },
-    {  1, -1,  1 },
-    { -1, -1,  1 },
-    { -1,  1,  1 },
-    {  1,  1, -1 },
-    {  1, -1, -1 },
-    { -1, -1, -1 },
-    { -1,  1, -1 }
-};
+// Model vertices
+const byte NUM_VERTICES = 8;
+point3 vertices[] = {
+    {-1, -1, 1},
+    {-1, 1, 1},
+    {1, -1, 1},
+    {1, 1, 1},
+    {1, -1, -1},
+    {1, 1, -1},
+    {-1, -1, -1},
+    {-1, 1, -1}};
 
-// Cube lines
-line3 cubeLines[] = {
-    { cubeVerts[0], cubeVerts[1] },
-    { cubeVerts[1], cubeVerts[2] },
-    { cubeVerts[2], cubeVerts[3] },
-    { cubeVerts[3], cubeVerts[0] },
-    { cubeVerts[4], cubeVerts[5] },
-    { cubeVerts[5], cubeVerts[6] },
-    { cubeVerts[6], cubeVerts[7] },
-    { cubeVerts[7], cubeVerts[4] },
-    { cubeVerts[0], cubeVerts[4] },
-    { cubeVerts[1], cubeVerts[5] },
-    { cubeVerts[2], cubeVerts[6] },
-    { cubeVerts[3], cubeVerts[7] },
-};
+// Model line indices
+// Each pair of indices defines a line
+const byte NUM_INDICES = 24;
+byte lineIndices[] = {
+    2, 3,
+    3, 1,
+    1, 0,
+    0, 2,
+    4, 5,
+    5, 3,
+    2, 4,
+    6, 7,
+    7, 5,
+    4, 6,
+    1, 7,
+    6, 0};
 
 // Create a camera
 Camera cam(64, 128);
@@ -89,9 +90,23 @@ void updateCube() {
 }
 
 void drawCube() {
-    for (byte i = 0; i < 12; i++) {
-        // Project line to screen after applying cube transform
-        line2 line = cam.project(cubeTrans * cubeLines[i]);
+    point3 verts[NUM_VERTICES];
+
+    // Apply cube transform to vertices
+    for (byte i = 0; i < NUM_VERTICES; i++) {
+        verts[i] = cubeTrans * vertices[i];
+    }
+
+    // Draw projected cube lines
+    for (byte i = 0; i < NUM_INDICES; i += 2) {
+        // Get line to project
+        line3 cubeLine = {
+            verts[lineIndices[i]],
+            verts[lineIndices[i + 1]]
+        };
+
+        // Project line to screen
+        line2 line = cam.project(cubeLine);
 
         // Draw if not clipped completely
         if (!isnan(line.p0.x)) {
